@@ -98,6 +98,7 @@ func (c *Clean) message(ctx *Context) {
 
 				if flags&invert != 0 {
 					flags = ^flags
+					flags = flags | all
 				}
 				if flags&bots != 0 {
 					if msg.Author.Bot {

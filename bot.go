@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/Moonlington/FloSelfbot/commands"
@@ -143,8 +145,12 @@ func main() {
 
 	go bufferLoop(dg)
 
-	<-make(chan struct{})
-	return
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+
+	// Cleanly close down the Discord session.
+	dg.Close()
 }
 
 func removeDuplicateMembers(list *[]*discordgo.Member) {

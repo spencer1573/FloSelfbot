@@ -54,7 +54,7 @@ Follow [Install](#install).
 ## Usage
 
 -   Run FloSelfbot
--   Follow the instractions
+-   Follow the instructions
 -   Enjoy and give feedback!
 
 
