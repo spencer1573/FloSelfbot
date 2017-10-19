@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -14,7 +16,7 @@ type Cinfo struct{}
 func (c *Cinfo) message(ctx *Context) {
 	em := createEmbed(ctx)
 	em.Fields = make([]*discordgo.MessageEmbedField, 0)
-	if !ctx.Channel.IsPrivate {
+	if ctx.Channel.Type != discordgo.ChannelTypeDM && ctx.Channel.Type != discordgo.ChannelTypeGroupDM {
 		em.Author = &discordgo.MessageEmbedAuthor{
 			Name:    fmt.Sprintf("Channel Info: %s", ctx.Channel.Name),
 			IconURL: "https://twemoji.maxcdn.com/36x36/2139.png",
@@ -26,7 +28,7 @@ func (c *Cinfo) message(ctx *Context) {
 		})
 		em.Fields = append(em.Fields, &discordgo.MessageEmbedField{
 			Name:   "Type",
-			Value:  ctx.Channel.Type,
+			Value:  strconv.FormatInt(int64(ctx.Channel.Type), 10),
 			Inline: true,
 		})
 		var msg *discordgo.Message
@@ -69,8 +71,12 @@ func (c *Cinfo) message(ctx *Context) {
 			})
 		}
 	} else {
+		recipients := make([]string, 0, len(ctx.Channel.Recipients))
+		for _, recipient := range ctx.Channel.Recipients {
+			recipients = append(recipients, recipient.Username)
+		}
 		em.Author = &discordgo.MessageEmbedAuthor{
-			Name:    fmt.Sprintf("DM Info: %s", ctx.Channel.Recipient.Username),
+			Name:    fmt.Sprintf("DM Info: %s", strings.Join(recipients, ", ")),
 			IconURL: "https://twemoji.maxcdn.com/36x36/2139.png",
 		}
 	}

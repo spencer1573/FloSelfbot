@@ -34,7 +34,11 @@ func sendToBuffer(s *discordgo.Session, ChannelID, str string) {
 	guild, err := s.State.Guild(channel.GuildID)
 	if err != nil {
 		gn = "Direct Message"
-		cn = channel.Recipient.Username + "#" + channel.Recipient.Discriminator
+		if channel.Name == "" {
+			cn = "DM:" + channel.ID
+		} else {
+			cn = channel.Name
+		}
 	} else {
 		gn = guild.ID
 		cn = channel.Name

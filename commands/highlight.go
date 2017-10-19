@@ -55,7 +55,7 @@ func HighLightFunc(s *discordgo.Session, conf *Config, m *discordgo.Message) {
 	ch, err := s.State.Channel(m.ChannelID)
 	var authorIcon, guildIcon string
 	var guild *discordgo.Guild
-	if err == nil && !ch.IsPrivate {
+	if err == nil && ch.Type != discordgo.ChannelTypeDM && ch.Type != discordgo.ChannelTypeGroupDM {
 		guild, _ = s.State.Guild(ch.GuildID)
 		if len(guild.Icon) > 0 {
 			guildIcon = discordgo.EndpointGuildIcon(guild.ID, guild.Icon)
@@ -67,8 +67,12 @@ func HighLightFunc(s *discordgo.Session, conf *Config, m *discordgo.Message) {
 	logerror(err)
 	timestampo := timestamp.Local().Format(time.ANSIC)
 	sentfrom := "Sent "
-	if ch.IsPrivate {
-		sentfrom = sentfrom + "in DM with " + ch.Recipient.Username + "#" + ch.Recipient.Discriminator
+	if ch.Type == discordgo.ChannelTypeDM || ch.Type == discordgo.ChannelTypeGroupDM {
+		recipients := make([]string, 0, len(ch.Recipients))
+		for _, recipient := range ch.Recipients {
+			recipients = append(recipients, recipient.Username+"#"+recipient.Discriminator)
+		}
+		sentfrom = sentfrom + "in DM with " + strings.Join(recipients, ", ")
 	} else {
 		sentfrom = sentfrom + "from #" + ch.Name + " in " + guild.Name
 	}
@@ -78,7 +82,7 @@ func HighLightFunc(s *discordgo.Session, conf *Config, m *discordgo.Message) {
 	em := &discordgo.MessageEmbed{Author: emauthor, Footer: emfooter, Description: newMsg[0:int(math.Min(2000, float64(len(newMsg))))], Color: emcolor}
 	em.Fields = append(em.Fields, &discordgo.MessageEmbedField{Name: "Matches", Value: strings.Join(matches, "\n"), Inline: false})
 	em.Fields = append(em.Fields, &discordgo.MessageEmbedField{Name: "Owner", Value: "<@" + m.Author.ID + ">", Inline: true})
-	if !ch.IsPrivate {
+	if ch.Type != discordgo.ChannelTypeDM && ch.Type != discordgo.ChannelTypeGroupDM {
 		em.Fields = append(em.Fields, &discordgo.MessageEmbedField{Name: "Channel", Value: "<#" + ch.ID + ">", Inline: true})
 	}
 	em.Fields = append(em.Fields, &discordgo.MessageEmbedField{Name: "Message ID", Value: m.ID, Inline: true})

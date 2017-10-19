@@ -17,7 +17,7 @@ func (u *Uinfo) message(ctx *Context) {
 	var err error
 
 	if len(ctx.Args) > 0 {
-		if !ctx.Channel.IsPrivate {
+		if ctx.Channel.Type != discordgo.ChannelTypeDM && ctx.Channel.Type != discordgo.ChannelTypeGroupDM {
 			user, err = ctx.GetUser(ctx.Argstr, ctx.Channel.GuildID)
 			if err != nil {
 				return
@@ -54,7 +54,7 @@ func (u *Uinfo) message(ctx *Context) {
 		Value:  strconv.FormatBool(user.Bot),
 		Inline: true,
 	})
-	if !ctx.Channel.IsPrivate {
+	if ctx.Channel.Type != discordgo.ChannelTypeDM && ctx.Channel.Type != discordgo.ChannelTypeGroupDM {
 		var member *discordgo.Member
 		for _, m := range ctx.Guild.Members {
 			if m.User.ID == user.ID {

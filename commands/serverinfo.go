@@ -14,7 +14,7 @@ import (
 type Sinfo struct{}
 
 func (s *Sinfo) message(ctx *Context) {
-	if !ctx.Channel.IsPrivate {
+	if ctx.Channel.Type != discordgo.ChannelTypeDM && ctx.Channel.Type != discordgo.ChannelTypeGroupDM {
 		em := createEmbed(ctx)
 		em.Author = &discordgo.MessageEmbedAuthor{
 			Name:    fmt.Sprintf("Server Info: %s", ctx.Guild.Name),
@@ -57,7 +57,7 @@ func (s *Sinfo) message(ctx *Context) {
 		var regular, voice, hidden int
 		for _, ch := range ctx.Guild.Channels {
 			regular++
-			if ch.Type == "voice" {
+			if ch.Type == discordgo.ChannelTypeGuildVoice {
 				voice++
 				continue
 			}

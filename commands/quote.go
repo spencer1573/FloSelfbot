@@ -40,7 +40,7 @@ func (q *QuoteRegex) message(ctx *Context) {
 	// var guild *discordgo.Guild
 	var authorIcon, guildIcon string
 
-	if !ctx.Channel.IsPrivate {
+	if ctx.Channel.Type != discordgo.ChannelTypeDM && ctx.Channel.Type != discordgo.ChannelTypeGroupDM {
 		if len(ctx.Guild.Icon) > 0 {
 			guildIcon = discordgo.EndpointGuildIcon(ctx.Guild.ID, ctx.Guild.Icon)
 		}
@@ -92,9 +92,11 @@ func (q *Quote) message(ctx *Context) {
 			if err != nil {
 				chs, _ := ctx.Sess.UserChannels()
 				for _, c := range chs {
-					if c.Recipient.ID == cID {
-						ch = c
-						break
+					for _, recipient := range c.Recipients {
+						if recipient.ID == cID {
+							ch = c
+							break
+						}
 					}
 				}
 			}
@@ -114,7 +116,7 @@ func (q *Quote) message(ctx *Context) {
 		// var guild *discordgo.Guild
 		var authorIcon, guildIcon string
 
-		if err == nil && !ch.IsPrivate {
+		if err == nil && ch.Type != discordgo.ChannelTypeDM && ch.Type != discordgo.ChannelTypeGroupDM {
 			guild, _ := ctx.Sess.State.Guild(ch.GuildID)
 			if len(guild.Icon) > 0 {
 				guildIcon = discordgo.EndpointGuildIcon(guild.ID, guild.Icon)

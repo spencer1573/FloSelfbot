@@ -274,7 +274,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			ctx = &commands.Context{Conf: conf, Invoked: invoked, Argstr: argstr, Args: args, Channel: channel, Guild: guild, Mess: m, Sess: s}
 		}
 		p, _ := s.UserChannelPermissions(s.State.User.ID, m.ChannelID)
-		if channel.Recipient == nil {
+		if channel.Type == discordgo.ChannelTypeGuildText {
 			if p&discordgo.PermissionEmbedLinks != discordgo.PermissionEmbedLinks {
 				logerror(errors.New("THE SELFBOT DOES NOT WORK IN CHANNELS WHERE YOU DONT HAVE EMBEDLINKS PERMISSION"))
 				return
