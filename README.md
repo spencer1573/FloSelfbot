@@ -31,7 +31,7 @@ Current features
 -   Download the latest version of the selfbot
 -   Extract
 
-We recommend to put the binary in a seperate folder (Don't worry, it makes friends fast).
+We recommend putting the binary in a separate folder (Don't worry, it makes friends fast).
 
 On OS X and Linux, you might need to set the binary executable:
 
